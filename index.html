@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>URL 转二维码</title>
+    <title>二维码生成器</title>
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <style>
         :root {
@@ -47,6 +47,41 @@
             margin-bottom: 24px;
             color: var(--accent);
             text-align: center;
+        }
+
+        .mode-switch {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .mode-btn {
+            flex: 1;
+            padding: 10px 0;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--subtext);
+            text-align: center;
+            transition: all 0.2s;
+            outline: none;
+        }
+
+        .mode-btn:first-child {
+            border-radius: 8px 0 0 8px;
+            border-right: none;
+        }
+
+        .mode-btn:last-child {
+            border-radius: 0 8px 8px 0;
+        }
+
+        .mode-btn.active {
+            background: var(--accent);
+            color: #0f172a;
+            border-color: var(--accent);
         }
 
         .form-group {
@@ -137,10 +172,15 @@
 </head>
 <body>
     <div class="container">
-        <div class="title">URL 转二维码</div>
+        <div class="title">二维码生成器</div>
+
+        <div class="mode-switch" id="modeSwitch">
+            <button class="mode-btn active" data-mode="url">URL</button>
+            <button class="mode-btn" data-mode="text">文字</button>
+        </div>
 
         <div class="form-group">
-            <label>输入链接（图片URL或任意网址）</label>
+            <label id="inputLabel">输入链接（图片URL或任意网址）</label>
             <input type="text" id="urlInput" placeholder="例如：https://example.com/image.jpg" />
         </div>
 
@@ -148,19 +188,54 @@
 
         <div class="qr-section" id="qrSection" style="display:none;">
             <div class="qr-container" id="qrCode"></div>
-            <div class="qr-tip">扫描二维码直接访问链接</div>
+            <div class="qr-tip" id="qrTip">扫描二维码直接访问链接</div>
             <div class="url-display" id="urlDisplay"></div>
         </div>
     </div>
 
     <script>
         var qrCodeInstance = null;
+        var currentMode = 'url';
+
+        var modeBtns = document.querySelectorAll('.mode-btn');
+        var inputLabel = document.getElementById('inputLabel');
+        var qrTip = document.getElementById('qrTip');
+        var urlInput = document.getElementById('urlInput');
+
+        modeBtns.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var mode = this.getAttribute('data-mode');
+                if (currentMode === mode) return;
+
+                modeBtns.forEach(function(b) { b.classList.remove('active'); });
+                this.classList.add('active');
+                currentMode = mode;
+
+                if (mode === 'url') {
+                    inputLabel.textContent = '输入链接（图片URL或任意网址）';
+                    urlInput.placeholder = '例如：https://example.com/image.jpg';
+                    qrTip.textContent = '扫描二维码直接访问链接';
+                } else {
+                    inputLabel.textContent = '输入文字或编号';
+                    urlInput.placeholder = '例如：产品编号 A001';
+                    qrTip.textContent = '扫描二维码查看文字内容';
+                }
+            });
+        });
 
         function generateQR() {
-            var url = document.getElementById('urlInput').value.trim();
-            if (!url) {
-                alert('请输入一个URL链接');
-                return;
+            var input = urlInput.value.trim();
+
+            if (currentMode === 'url') {
+                if (!input) {
+                    alert('请输入一个URL链接');
+                    return;
+                }
+            } else {
+                if (!input) {
+                    alert('请输入文字或编号');
+                    return;
+                }
             }
 
             var qrSection = document.getElementById('qrSection');
@@ -171,7 +246,7 @@
             qrCode.innerHTML = '';
 
             qrCodeInstance = new QRCode(qrCode, {
-                text: url,
+                text: input,
                 width: 240,
                 height: 240,
                 colorDark: '#0f172a',
@@ -179,12 +254,12 @@
                 correctLevel: QRCode.CorrectLevel.M
             });
 
-            urlDisplay.textContent = url;
+            urlDisplay.textContent = input;
         }
 
         document.getElementById('generateBtn').addEventListener('click', generateQR);
 
-        document.getElementById('urlInput').addEventListener('keydown', function(e) {
+        urlInput.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') generateQR();
         });
     </script>
