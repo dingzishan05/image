@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>test.jpg 二维码</title>
-    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js">
-    </script>
+    <title>URL 转二维码</title>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <style>
         :root {
             --bg: #0f172a;
@@ -35,47 +34,23 @@
 
         .container {
             width: 100%;
-            max-width: 800px;
-            display: grid;
-            grid-template-columns: 1.2fr 0.8fr;
-            gap: 24px;
-        }
-
-        @media (max-width: 700px) {
-            .container {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .card {
+            max-width: 440px;
             background: var(--card-bg);
             border-radius: 16px;
-            padding: 28px;
+            padding: 32px;
             border: 1px solid var(--border);
         }
 
-        .card-title {
-            font-size: 18px;
+        .title {
+            font-size: 22px;
             font-weight: 700;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
             color: var(--accent);
-        }
-
-        .image-wrapper {
-            width: 100%;
-            border-radius: 12px;
-            overflow: hidden;
-            margin-bottom: 16px;
-        }
-
-        .image-wrapper img {
-            width: 100%;
-            display: block;
-            border-radius: 12px;
+            text-align: center;
         }
 
         .form-group {
-            margin-bottom: 14px;
+            margin-bottom: 16px;
         }
 
         .form-group label {
@@ -86,10 +61,9 @@
             color: var(--subtext);
         }
 
-        .form-group input,
-        .form-group textarea {
+        .form-group input {
             width: 100%;
-            padding: 10px 14px;
+            padding: 12px 14px;
             background: #0f172a;
             border: 1px solid var(--border);
             border-radius: 8px;
@@ -98,16 +72,28 @@
             font-family: inherit;
             outline: none;
             transition: border-color 0.2s;
-            resize: vertical;
         }
 
-        .form-group input:focus,
-        .form-group textarea:focus {
+        .form-group input:focus {
             border-color: var(--accent);
         }
 
-        .form-group textarea {
-            min-height: 60px;
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            background: var(--accent);
+            color: #0f172a;
+        }
+
+        .btn:hover {
+            filter: brightness(1.1);
         }
 
         .qr-section {
@@ -115,6 +101,7 @@
             flex-direction: column;
             align-items: center;
             gap: 16px;
+            margin-top: 16px;
         }
 
         .qr-container {
@@ -134,38 +121,6 @@
             text-align: center;
         }
 
-        .btn {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-family: inherit;
-        }
-
-        .btn-accent {
-            background: var(--accent);
-            color: #0f172a;
-        }
-
-        .btn-accent:hover {
-            filter: brightness(1.1);
-        }
-
-        .btn-outline {
-            background: transparent;
-            color: var(--accent);
-            border: 2px solid var(--accent);
-            margin-top: 8px;
-        }
-
-        .btn-outline:hover {
-            background: rgba(56, 189, 248, 0.1);
-        }
-
         .url-display {
             width: 100%;
             padding: 10px 14px;
@@ -176,127 +131,62 @@
             word-break: break-all;
             text-align: center;
             border: 1px solid var(--border);
+            margin-top: 8px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- 左侧：图片预览 + 文字编辑 -->
-        <div class="card">
-            <div class="card-title">🖼️ 图片预览</div>
-            <div class="image-wrapper">
-                <img id="previewImage" src="test.jpg" alt="预览图片" />
-            </div>
-            <div class="form-group">
-                <label>📝 附加文字（可选，扫码后在页面下方显示）</label>
-                <textarea id="textInput" placeholder="输入文字..."></textarea>
-            </div>
-            <div class="form-group">
-                <label>� 图片链接（默认使用 test.jpg）</label>
-                <input type="text" id="imageInput" value="test.jpg" />
-            </div>
-            <button class="btn btn-accent" id="refreshBtn">🔄 刷新二维码</button>
+        <div class="title">URL 转二维码</div>
+
+        <div class="form-group">
+            <label>输入链接（图片URL或任意网址）</label>
+            <input type="text" id="urlInput" placeholder="例如：https://example.com/image.jpg" />
         </div>
 
-        <!-- 右侧：二维码 -->
-        <div class="card">
-            <div class="card-title">📱 扫码查看图片</div>
-            <div class="qr-section">
-                <div class="qr-container" id="qrCode"></div>
-                <div class="qr-tip">扫描二维码直接查看图片</div>
-                <div class="url-display" id="urlDisplay"></div>
-                <button class="btn btn-outline" id="copyBtn">📋 复制图片链接</button>
-            </div>
+        <button class="btn" id="generateBtn">生成二维码</button>
+
+        <div class="qr-section" id="qrSection" style="display:none;">
+            <div class="qr-container" id="qrCode"></div>
+            <div class="qr-tip">扫描二维码直接访问链接</div>
+            <div class="url-display" id="urlDisplay"></div>
         </div>
     </div>
 
     <script>
-        var BASE = 'https://dingzishan05.github.io/image/';
-        // 本地预览时回退
-        if (window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-            BASE = window.location.href.replace(/index\.html$/, '');
-        }
+        var qrCodeInstance = null;
 
-        var currentUrl = '';
+        function generateQR() {
+            var url = document.getElementById('urlInput').value.trim();
+            if (!url) {
+                alert('请输入一个URL链接');
+                return;
+            }
 
-        function getImageUrl(filename) {
-            if (/^https?:\/\//i.test(filename)) return filename;
-            return BASE + filename;
-        }
-
-        function getPageUrl(image, text) {
-            var url = new URL(BASE + 'index.html');
-            if (image) url.searchParams.set('image', image);
-            if (text) url.searchParams.set('text', text);
-            return url.toString();
-        }
-
-        function initQR() {
-            var imageVal = document.getElementById('imageInput').value.trim() || 'test.jpg';
-            var textVal = document.getElementById('textInput').value.trim();
-
-            currentUrl = getPageUrl(imageVal, textVal);
-
+            var qrSection = document.getElementById('qrSection');
             var qrCode = document.getElementById('qrCode');
+            var urlDisplay = document.getElementById('urlDisplay');
+
+            qrSection.style.display = 'flex';
             qrCode.innerHTML = '';
-            new QRCode(qrCode, {
-                text: currentUrl,
-                width: 220,
-                height: 220,
+
+            qrCodeInstance = new QRCode(qrCode, {
+                text: url,
+                width: 240,
+                height: 240,
                 colorDark: '#0f172a',
                 colorLight: '#ffffff',
                 correctLevel: QRCode.CorrectLevel.M
             });
 
-            document.getElementById('urlDisplay').textContent = currentUrl;
-
-            // 更新预览图
-            var img = document.getElementById('previewImage');
-            img.src = getImageUrl(imageVal);
+            urlDisplay.textContent = url;
         }
 
-        // 从 URL 参数加载（扫码访问时）
-        function loadFromParams() {
-            var params = new URLSearchParams(window.location.search);
-            var text = params.get('text');
-            var image = params.get('image');
+        document.getElementById('generateBtn').addEventListener('click', generateQR);
 
-            if (!text && !image) return;
-
-            if (image) {
-                document.getElementById('previewImage').src = getImageUrl(image);
-            }
-            if (text) {
-                var el = document.createElement('div');
-                el.style.cssText = 'margin-top:16px;padding:16px;background:#1e293b;border-radius:10px;font-size:15px;line-height:1.6;color:#f1f5f9;text-align:center;word-break:break-word;border:1px solid #334155;';
-                el.textContent = text;
-                document.querySelector('.container').parentElement.appendChild(el);
-            }
-            // 扫码模式下隐藏编辑区
-            var cards = document.querySelectorAll('.card');
-            if (cards.length >= 2) {
-                cards[0].style.display = 'none';
-            }
-        }
-
-        document.getElementById('refreshBtn').addEventListener('click', initQR);
-
-        document.getElementById('imageInput').addEventListener('input', function() {
-            var img = document.getElementById('previewImage');
-            img.src = getImageUrl(this.value.trim() || 'test.jpg');
+        document.getElementById('urlInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') generateQR();
         });
-
-        document.getElementById('copyBtn').addEventListener('click', function() {
-            if (!currentUrl) return;
-            navigator.clipboard.writeText(currentUrl).then(function() {
-                var btn = document.getElementById('copyBtn');
-                btn.textContent = '✅ 已复制！';
-                setTimeout(function() { btn.textContent = '📋 复制图片链接'; }, 2000);
-            });
-        });
-
-        initQR();
-        loadFromParams();
     </script>
 </body>
 </html>
