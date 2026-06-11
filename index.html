@@ -3,19 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>二维码图文分享</title>
+    <title>test.jpg 二维码</title>
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js">
     </script>
     <style>
         :root {
-            --bg: #f0f2f5;
-            --card-bg: #ffffff;
-            --text: #1a1a2e;
-            --primary: #4f46e5;
-            --primary-hover: #4338ca;
-            --border: #e2e8f0;
-            --shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
-            --radius: 16px;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #f1f5f9;
+            --subtext: #94a3b8;
+            --accent: #38bdf8;
+            --border: #334155;
         }
 
         * {
@@ -37,13 +35,13 @@
 
         .container {
             width: 100%;
-            max-width: 900px;
+            max-width: 800px;
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1.2fr 0.8fr;
             gap: 24px;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 700px) {
             .container {
                 grid-template-columns: 1fr;
             }
@@ -51,360 +49,253 @@
 
         .card {
             background: var(--card-bg);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            padding: 32px;
-        }
-
-        @media (max-width: 768px) {
-            .card {
-                padding: 24px;
-            }
+            border-radius: 16px;
+            padding: 28px;
+            border: 1px solid var(--border);
         }
 
         .card-title {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 24px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .card-title .icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--accent);
         }
 
-        .icon-edit { background: #eef2ff; color: #4f46e5; }
-        .icon-preview { background: #f0fdf4; color: #16a34a; }
+        .image-wrapper {
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
 
-        .form-group { margin-bottom: 20px; }
+        .image-wrapper img {
+            width: 100%;
+            display: block;
+            border-radius: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
 
         .form-group label {
             display: block;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
-            margin-bottom: 8px;
-            color: #374151;
+            margin-bottom: 6px;
+            color: var(--subtext);
         }
 
         .form-group input,
         .form-group textarea {
             width: 100%;
-            padding: 12px 16px;
-            border: 2px solid var(--border);
-            border-radius: 10px;
+            padding: 10px 14px;
+            background: #0f172a;
+            border: 1px solid var(--border);
+            border-radius: 8px;
             font-size: 14px;
+            color: var(--text);
             font-family: inherit;
-            transition: border-color 0.2s, box-shadow 0.2s;
             outline: none;
+            transition: border-color 0.2s;
             resize: vertical;
         }
 
         .form-group input:focus,
         .form-group textarea:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            border-color: var(--accent);
         }
 
-        .form-group textarea { min-height: 80px; }
-        .hint { font-size: 12px; color: #9ca3af; margin-top: 4px; }
+        .form-group textarea {
+            min-height: 60px;
+        }
+
+        .qr-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .qr-container {
+            padding: 12px;
+            background: #fff;
+            border-radius: 12px;
+        }
+
+        .qr-container canvas,
+        .qr-container img {
+            display: block;
+        }
+
+        .qr-tip {
+            font-size: 13px;
+            color: var(--subtext);
+            text-align: center;
+        }
 
         .btn {
             width: 100%;
-            padding: 14px;
+            padding: 12px;
             border: none;
-            border-radius: 10px;
-            font-size: 16px;
+            border-radius: 8px;
+            font-size: 15px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
             font-family: inherit;
         }
 
-        .btn-primary {
-            background: var(--primary);
-            color: #fff;
+        .btn-accent {
+            background: var(--accent);
+            color: #0f172a;
         }
 
-        .btn-primary:hover {
-            background: var(--primary-hover);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        .btn-accent:hover {
+            filter: brightness(1.1);
         }
 
-        .btn-secondary {
-            background: #fff;
-            color: var(--primary);
-            border: 2px solid var(--primary);
+        .btn-outline {
+            background: transparent;
+            color: var(--accent);
+            border: 2px solid var(--accent);
             margin-top: 8px;
         }
 
-        .btn-secondary:hover { background: #eef2ff; }
-
-        .preview-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .preview-image-wrapper {
-            width: 100%;
-            max-height: 200px;
-            border-radius: 12px;
-            overflow: hidden;
-            background: #f9fafb;
-            border: 2px dashed var(--border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .preview-image-wrapper img {
-            width: 100%;
-            height: 100%;
-            max-height: 200px;
-            object-fit: cover;
-            display: block;
-        }
-
-        .preview-image-placeholder {
-            color: #d1d5db;
-            font-size: 48px;
-            padding: 40px;
-        }
-
-        .preview-text {
-            width: 100%;
-            padding: 16px;
-            background: #f9fafb;
-            border-radius: 10px;
-            font-size: 15px;
-            line-height: 1.6;
-            color: #374151;
-            text-align: center;
-            word-break: break-word;
-        }
-
-        .preview-text.empty {
-            color: #d1d5db;
-            font-style: italic;
-        }
-
-        .qr-wrapper {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .qr-container {
-            padding: 16px;
-            background: #fff;
-            border-radius: 12px;
-            border: 2px solid var(--border);
-        }
-
-        .qr-container canvas,
-        .qr-container img { display: block; }
-
-        .qr-tip {
-            font-size: 13px;
-            color: #9ca3af;
-            text-align: center;
+        .btn-outline:hover {
+            background: rgba(56, 189, 248, 0.1);
         }
 
         .url-display {
             width: 100%;
             padding: 10px 14px;
-            background: #f3f4f6;
+            background: #0f172a;
             border-radius: 8px;
             font-size: 12px;
-            color: #6b7280;
+            color: var(--subtext);
             word-break: break-all;
             text-align: center;
+            border: 1px solid var(--border);
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="card" id="editorCard">
-            <div class="card-title">
-                <span class="icon icon-edit">✏️</span>
-                编辑内容
+        <!-- 左侧：图片预览 + 文字编辑 -->
+        <div class="card">
+            <div class="card-title">🖼️ 图片预览</div>
+            <div class="image-wrapper">
+                <img id="previewImage" src="test.jpg" alt="预览图片" />
             </div>
             <div class="form-group">
-                <label>📷 图片链接</label>
-                <input type="text" id="imageUrl" placeholder="输入图片的URL地址" />
-                <div class="hint">支持任意网络图片链接（jpg、png、webp 等）</div>
+                <label>📝 附加文字（可选，扫码后在页面下方显示）</label>
+                <textarea id="textInput" placeholder="输入文字..."></textarea>
             </div>
             <div class="form-group">
-                <label>📝 文字内容</label>
-                <textarea id="textContent" placeholder="输入你想展示的文字..."></textarea>
+                <label>� 图片链接（默认使用 test.jpg）</label>
+                <input type="text" id="imageInput" value="test.jpg" />
             </div>
-            <button class="btn btn-primary" id="generateBtn">✨ 生成二维码</button>
-            <button class="btn btn-secondary" id="copyBtn" style="display:none;">📋 复制链接</button>
+            <button class="btn btn-accent" id="refreshBtn">🔄 刷新二维码</button>
         </div>
 
-        <div class="card" id="previewCard">
-            <div class="card-title">
-                <span class="icon icon-preview">📱</span>
-                预览 &amp; 二维码
-            </div>
-            <div class="preview-content">
-                <div class="preview-image-wrapper" id="previewImageWrapper">
-                    <span class="preview-image-placeholder" id="imagePlaceholder">🖼️</span>
-                    <img id="previewImage" src="" alt="预览图片" style="display:none;" />
-                </div>
-                <div class="preview-text empty" id="previewText">输入内容后点击生成二维码</div>
-                <div class="qr-wrapper" id="qrWrapper" style="display:none;">
-                    <div class="qr-container" id="qrCode"></div>
-                    <div class="qr-tip">📱 扫描二维码查看图文</div>
-                </div>
-                <div class="url-display" id="urlDisplay" style="display:none;"></div>
+        <!-- 右侧：二维码 -->
+        <div class="card">
+            <div class="card-title">📱 扫码查看图片</div>
+            <div class="qr-section">
+                <div class="qr-container" id="qrCode"></div>
+                <div class="qr-tip">扫描二维码直接查看图片</div>
+                <div class="url-display" id="urlDisplay"></div>
+                <button class="btn btn-outline" id="copyBtn">📋 复制图片链接</button>
             </div>
         </div>
     </div>
 
     <script>
-        var currentPageUrl = '';
+        var BASE = 'https://dingzishan05.github.io/image/';
+        // 本地预览时回退
+        if (window.location.protocol === 'file:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            BASE = window.location.href.replace(/index\.html$/, '');
+        }
 
-        function getPageUrl(text, imageUrl) {
-            var url = new URL(window.location.href.split('?')[0]);
+        var currentUrl = '';
+
+        function getImageUrl(filename) {
+            if (/^https?:\/\//i.test(filename)) return filename;
+            return BASE + filename;
+        }
+
+        function getPageUrl(image, text) {
+            var url = new URL(BASE + 'index.html');
+            if (image) url.searchParams.set('image', image);
             if (text) url.searchParams.set('text', text);
-            if (imageUrl) url.searchParams.set('image', imageUrl);
             return url.toString();
         }
 
-        function loadFromParams() {
-            var params = new URLSearchParams(window.location.search);
-            var text = params.get('text');
-            var image = params.get('image');
-            if (!text && !image) return;
+        function initQR() {
+            var imageVal = document.getElementById('imageInput').value.trim() || 'test.jpg';
+            var textVal = document.getElementById('textInput').value.trim();
 
-            if (image) document.getElementById('imageUrl').value = image;
-            if (text) document.getElementById('textContent').value = text;
-            updatePreview(text, image);
-            generateQR(text, image);
-            document.getElementById('editorCard').style.display = 'none';
-        }
+            currentUrl = getPageUrl(imageVal, textVal);
 
-        function updatePreview(text, imageUrl) {
-            var previewText = document.getElementById('previewText');
-            var previewImage = document.getElementById('previewImage');
-            var placeholder = document.getElementById('imagePlaceholder');
-
-            if (text) {
-                previewText.textContent = text;
-                previewText.classList.remove('empty');
-            } else {
-                previewText.textContent = '暂未填写文字';
-                previewText.classList.add('empty');
-            }
-
-            if (imageUrl) {
-                previewImage.src = imageUrl;
-                previewImage.style.display = 'block';
-                placeholder.style.display = 'none';
-                previewImage.onerror = function() {
-                    previewImage.style.display = 'none';
-                    placeholder.style.display = 'block';
-                    placeholder.textContent = '❌';
-                };
-                previewImage.onload = function() {
-                    previewImage.style.display = 'block';
-                    placeholder.style.display = 'none';
-                };
-            } else {
-                previewImage.style.display = 'none';
-                placeholder.style.display = 'block';
-                placeholder.textContent = '🖼️';
-            }
-        }
-
-        function generateQR(text, imageUrl) {
-            var qrWrapper = document.getElementById('qrWrapper');
             var qrCode = document.getElementById('qrCode');
-            var urlDisplay = document.getElementById('urlDisplay');
-
-            if (!text && !imageUrl) {
-                qrWrapper.style.display = 'none';
-                urlDisplay.style.display = 'none';
-                return;
-            }
-
             qrCode.innerHTML = '';
-            currentPageUrl = getPageUrl(text || '', imageUrl || '');
-
             new QRCode(qrCode, {
-                text: currentPageUrl,
-                width: 200,
-                height: 200,
-                colorDark: '#1a1a2e',
+                text: currentUrl,
+                width: 220,
+                height: 220,
+                colorDark: '#0f172a',
                 colorLight: '#ffffff',
                 correctLevel: QRCode.CorrectLevel.M
             });
 
-            qrWrapper.style.display = 'flex';
-            urlDisplay.style.display = 'block';
-            urlDisplay.textContent = '🔗 ' + currentPageUrl;
-            document.getElementById('copyBtn').style.display = 'block';
+            document.getElementById('urlDisplay').textContent = currentUrl;
+
+            // 更新预览图
+            var img = document.getElementById('previewImage');
+            img.src = getImageUrl(imageVal);
         }
 
-        document.getElementById('generateBtn').addEventListener('click', function() {
-            var text = document.getElementById('textContent').value.trim();
-            var imageUrl = document.getElementById('imageUrl').value.trim();
-            if (!text && !imageUrl) {
-                alert('请至少输入图片链接或文字内容');
-                return;
+        // 从 URL 参数加载（扫码访问时）
+        function loadFromParams() {
+            var params = new URLSearchParams(window.location.search);
+            var text = params.get('text');
+            var image = params.get('image');
+
+            if (!text && !image) return;
+
+            if (image) {
+                document.getElementById('previewImage').src = getImageUrl(image);
             }
-            updatePreview(text, imageUrl);
-            generateQR(text, imageUrl);
-            window.history.replaceState({}, '', currentPageUrl);
+            if (text) {
+                var el = document.createElement('div');
+                el.style.cssText = 'margin-top:16px;padding:16px;background:#1e293b;border-radius:10px;font-size:15px;line-height:1.6;color:#f1f5f9;text-align:center;word-break:break-word;border:1px solid #334155;';
+                el.textContent = text;
+                document.querySelector('.container').parentElement.appendChild(el);
+            }
+            // 扫码模式下隐藏编辑区
+            var cards = document.querySelectorAll('.card');
+            if (cards.length >= 2) {
+                cards[0].style.display = 'none';
+            }
+        }
+
+        document.getElementById('refreshBtn').addEventListener('click', initQR);
+
+        document.getElementById('imageInput').addEventListener('input', function() {
+            var img = document.getElementById('previewImage');
+            img.src = getImageUrl(this.value.trim() || 'test.jpg');
         });
 
         document.getElementById('copyBtn').addEventListener('click', function() {
-            if (!currentPageUrl) return;
-            navigator.clipboard.writeText(currentPageUrl).then(function() {
+            if (!currentUrl) return;
+            navigator.clipboard.writeText(currentUrl).then(function() {
                 var btn = document.getElementById('copyBtn');
-                var orig = btn.textContent;
                 btn.textContent = '✅ 已复制！';
-                btn.style.background = '#16a34a';
-                btn.style.color = '#fff';
-                btn.style.borderColor = '#16a34a';
-                setTimeout(function() {
-                    btn.textContent = orig;
-                    btn.style.background = '#fff';
-                    btn.style.color = '#4f46e5';
-                    btn.style.borderColor = '#4f46e5';
-                }, 2000);
-            }).catch(function() {
-                alert('复制失败，请手动复制链接');
+                setTimeout(function() { btn.textContent = '📋 复制图片链接'; }, 2000);
             });
         });
 
-        document.getElementById('imageUrl').addEventListener('input', function() {
-            var imageUrl = this.value.trim();
-            var previewImage = document.getElementById('previewImage');
-            var placeholder = document.getElementById('imagePlaceholder');
-            if (imageUrl) {
-                previewImage.src = imageUrl;
-                previewImage.style.display = 'block';
-                placeholder.style.display = 'none';
-            } else {
-                previewImage.style.display = 'none';
-                placeholder.style.display = 'block';
-                placeholder.textContent = '🖼️';
-            }
-        });
-
+        initQR();
         loadFromParams();
     </script>
 </body>
